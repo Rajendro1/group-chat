@@ -3,11 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"group-chat/db"
 
 	"log"
 	"net/http"
 
 	//"database/sql"
+	_ "github.com/lib/pq"
 
 	"github.com/gorilla/mux"
 )
@@ -39,10 +41,12 @@ func printUsernameHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Print the received username
 	fmt.Println("Received username:", payload.Username)
-
+	createUser, _, createUserErr := db.CreateUsersToDatabase(payload.Username)
+	if !createUser{
+		log.Println(createUserErr)
+	}
 	// Send response
 	response := map[string]string{"status": "success"}
 	json.NewEncoder(w).Encode(response)
 
 }
-
