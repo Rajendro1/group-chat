@@ -19,11 +19,14 @@ class App extends React.Component {
 
     setWebSocketConnection() {
         const username = prompt("What's Your name");
+        //console.log("the username: ",username)
         if (window["WebSocket"]) {
             const socketConnection = new WebSocket("ws://" + document.location.host + "/ws/" + username);
+            console.log("username is: ",username)
             this.webSocketConnection = socketConnection;
         }
     }
+
 
     subscribeToSocketMessage = () => {
         if (this.webSocketConnection === null) {
@@ -149,6 +152,42 @@ class App extends React.Component {
         );
     }
 
+  processValueAndSendToGo(value) {
+        // Process the value using Babel-transpiled code
+        const processedValue = processValue(value);
+      
+        // Send the processed value to the Go server
+        fetch('/sendProcessedValue', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ processedValue }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Processed value sent to Go successfully:', data);
+            // Handle any additional logic or UI updates
+          })
+          .catch(error => {
+            console.error('Error sending processed value to Go:', error);
+            // Handle error case
+          });
+      }
+      
+      // Babel-transpiled code for processing the value
+ processValue(value) {
+        // Your Babel-transpiled code logic here
+        // Example: Convert value to uppercase
+        return value.toUpperCase();
+      }
+      
+      // Call the function with the desired value
+    //   const  = 'Hello, Go!';
+    //   processValueAndSendToGo(value);
+      
+      
+   
     render() {
         return (
             <>
