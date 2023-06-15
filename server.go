@@ -1,19 +1,48 @@
 package main
 
 import (
-    "log"
-    "net/http"
+	"encoding/json"
+	"fmt"
 
-    "github.com/gorilla/mux"
+	"log"
+	"net/http"
+
+	//"database/sql"
+
+	"github.com/gorilla/mux"
 )
+
+type UsernamePayload struct {
+	Username string `json:"username"`
+}
 
 func main() {
 
-    log.Println("Server will start at http://localhost:8000/")
+	http.HandleFunc("/printUsername", printUsernameHandler)
 
-    route := mux.NewRouter()
+	log.Println("Server will start at http://localhost:8000/")
 
-    AddApproutes(route)
+	route := mux.NewRouter()
+	// r.HandleFunc("/insertUser", insertUserHandler).Methods("POST")
 
-    log.Fatal(http.ListenAndServe(":8000", route))
+	AddApproutes(route)
+
+	log.Fatal(http.ListenAndServe(":8000", route))
 }
+func printUsernameHandler(w http.ResponseWriter, r *http.Request) {
+	var payload UsernamePayload
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Print the received username
+	fmt.Println("Received username:", payload.Username)
+
+	// Send response
+	response := map[string]string{"status": "success"}
+	json.NewEncoder(w).Encode(response)
+
+}
+
